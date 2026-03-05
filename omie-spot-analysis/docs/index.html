@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OMIE Spot Analysis — Spanish Electricity Market | aibanezdelacruz-tech</title>
+  <meta name="description" content="Análisis exploratorio y forecasting XGBoost de precios horarios del mercado eléctrico spot español (OMIE) 2023-2025.">
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #0f172a;
+      --bg2:     #1e293b;
+      --bg3:     #334155;
+      --accent:  #3b82f6;
+      --accent2: #10b981;
+      --warn:    #f59e0b;
+      --danger:  #ef4444;
+      --text:    #e2e8f0;
+      --muted:   #94a3b8;
+      --border:  rgba(255,255,255,0.08);
+      --radius:  12px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+
+    /* NAV */
+    nav { position:sticky; top:0; z-index:100; background:rgba(15,23,42,0.9); backdrop-filter:blur(12px);
+          border-bottom:1px solid var(--border); padding:14px 24px; display:flex; align-items:center; gap:24px; }
+    nav .brand { font-weight:700; color:var(--accent); font-size:1rem; }
+    nav a { color:var(--muted); text-decoration:none; font-size:0.85rem; transition:color .2s; }
+    nav a:hover { color:var(--text); }
+    nav .right { margin-left:auto; display:flex; gap:12px; }
+
+    /* HERO */
+    .hero { padding:80px 24px 60px; text-align:center; }
+    .hero .badge {
+      display:inline-block; background:rgba(59,130,246,0.15); color:var(--accent);
+      border:1px solid rgba(59,130,246,0.3); border-radius:20px;
+      padding:4px 14px; font-size:0.78rem; font-weight:600; margin-bottom:20px; letter-spacing:.05em;
+    }
+    .hero h1 { font-size:clamp(1.8rem,4vw,3rem); font-weight:700; line-height:1.2; margin-bottom:16px; }
+    .hero h1 span { color:var(--accent); }
+    .hero p  { font-size:1.05rem; color:var(--muted); max-width:620px; margin:0 auto 32px; }
+    .btn-row { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 24px; border-radius:8px;
+           font-size:0.9rem; font-weight:600; text-decoration:none; transition:all .2s; cursor:pointer; }
+    .btn-primary  { background:var(--accent); color:#fff; }
+    .btn-primary:hover  { background:#2563eb; transform:translateY(-1px); }
+    .btn-outline  { background:transparent; color:var(--text); border:1px solid var(--border); }
+    .btn-outline:hover  { background:var(--bg2); transform:translateY(-1px); }
+
+    /* STATS STRIP */
+    .stats-strip { display:flex; justify-content:center; gap:0; flex-wrap:wrap;
+                   border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+                   background:var(--bg2); padding:24px; }
+    .stat { padding:8px 40px; text-align:center; border-right:1px solid var(--border); }
+    .stat:last-child { border-right:none; }
+    .stat .val { font-size:1.7rem; font-weight:700; color:var(--accent); font-family:'JetBrains Mono',monospace; }
+    .stat .lbl { font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-top:2px; }
+
+    /* SECTIONS */
+    section { padding:60px 24px; max-width:1100px; margin:0 auto; }
+    h2 { font-size:1.6rem; font-weight:700; margin-bottom:8px; }
+    h2 span { color:var(--accent); }
+    .subtitle { color:var(--muted); margin-bottom:36px; font-size:0.95rem; }
+
+    /* CARDS */
+    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:24px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px; }
+    .card {
+      background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius);
+      padding:28px; transition:border-color .2s, transform .2s;
+    }
+    .card:hover { border-color:rgba(59,130,246,0.4); transform:translateY(-2px); }
+    .card h3 { font-size:1rem; font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+    .card p  { font-size:0.875rem; color:var(--muted); line-height:1.7; }
+
+    /* MERIT ORDER */
+    .merit-item { display:flex; align-items:center; gap:14px; padding:12px 0;
+                  border-bottom:1px solid var(--border); }
+    .merit-item:last-child { border-bottom:none; }
+    .merit-rank { font-size:1.4rem; width:36px; flex-shrink:0; }
+    .merit-label { font-weight:500; font-size:0.9rem; }
+    .merit-price { margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--accent2); }
+
+    /* CHART CONTAINER */
+    .chart-box {
+      background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:20px;
+      margin-bottom:24px;
+    }
+    .chart-box h3 { font-size:0.95rem; font-weight:600; margin-bottom:4px; }
+    .chart-box .note { font-size:0.8rem; color:var(--muted); margin-bottom:16px; }
+
+    /* CODE */
+    code { font-family:'JetBrains Mono',monospace; font-size:0.85em; background:var(--bg3);
+           padding:2px 7px; border-radius:5px; color:var(--accent2); }
+
+    /* TECH TAGS */
+    .tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+    .tag { background:rgba(59,130,246,0.12); color:var(--accent); border:1px solid rgba(59,130,246,0.25);
+           border-radius:6px; padding:3px 12px; font-size:0.78rem; font-weight:500; }
+
+    /* FOOTER */
+    footer { border-top:1px solid var(--border); text-align:center; padding:32px 24px;
+             color:var(--muted); font-size:0.85rem; }
+    footer a { color:var(--accent); text-decoration:none; }
+
+    /* RESPONSIVE */
+    @media(max-width:600px) {
+      .stat { padding:8px 20px; }
+      .stats-strip { gap:0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="brand">⚡ OMIE Spot Analysis</span>
+  <a href="#analisis">Análisis</a>
+  <a href="#metodologia">Metodología</a>
+  <a href="#mercado">Mercado</a>
+  <div class="right">
+    <a href="https://github.com/aibanezdelacruz-tech/omie-spot-analysis" class="btn btn-outline" target="_blank">
+      💻 GitHub
+    </a>
+    <a href="https://aibanezdelacruz-tech.github.io/energy-portfolio/" class="btn btn-primary" target="_blank">
+      Portfolio →
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="badge">🇪🇸 Mercado Ibérico de Electricidad</div>
+  <h1>Análisis de Precios <span>OMIE</span><br>Mercado Diario Español</h1>
+  <p>Pipeline completo: datos reales 2023–2025, EDA con contexto energético y forecasting D+1 con XGBoost.</p>
+  <div class="btn-row">
+    <a href="https://github.com/aibanezdelacruz-tech/omie-spot-analysis/blob/main/notebooks/01_eda.ipynb" class="btn btn-primary" target="_blank">📊 Ver Notebook EDA</a>
+    <a href="https://github.com/aibanezdelacruz-tech/omie-spot-analysis/blob/main/notebooks/02_forecasting.ipynb" class="btn btn-outline" target="_blank">🤖 Ver Forecasting</a>
+    <a href="https://github.com/aibanezdelacruz-tech/omie-spot-analysis" class="btn btn-outline" target="_blank">💻 Código</a>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-strip" id="stats-strip">
+  <div class="stat"><div class="val" id="st-periodo">2023–2025</div><div class="lbl">Período analizado</div></div>
+  <div class="stat"><div class="val" id="st-horas">26,000+</div><div class="lbl">Horas de datos</div></div>
+  <div class="stat"><div class="val" id="st-media">—</div><div class="lbl">Precio medio (€/MWh)</div></div>
+  <div class="stat"><div class="val" id="st-neg">—</div><div class="lbl">Horas precio negativo</div></div>
+  <div class="stat"><div class="val" id="st-vol">—</div><div class="lbl">Volatilidad (σ)</div></div>
+</div>
+
+<!-- ANÁLISIS -->
+<section id="analisis">
+  <h2>📊 Análisis <span>Exploratorio</span></h2>
+  <p class="subtitle">Patrones de precio extraídos de datos reales OMIE — interpretados con contexto energético</p>
+
+  <!-- Heatmap -->
+  <div class="chart-box">
+    <h3>🌡️ Precio medio por hora y día de semana</h3>
+    <p class="note">
+      El <strong>solar valley</strong> (12–15h en días laborables) muestra la depresión de precios por la fotovoltaica.
+      El <strong>evening peak</strong> (18–22h) refleja máxima demanda sin sol: el gas CCGT marca precio en el merit order.
+    </p>
+    <div id="heatmap-chart" style="height:380px"></div>
+  </div>
+
+  <!-- Timeseries -->
+  <div class="chart-box">
+    <h3>📈 Evolución del precio spot (media diaria)</h3>
+    <p class="note">Post-crisis energética 2022: normalización gradual de precios con alta volatilidad persistente.</p>
+    <div id="timeseries-chart" style="height:320px"></div>
+  </div>
+</section>
+
+<!-- METODOLOGÍA -->
+<section id="metodologia">
+  <h2>🤖 <span>Forecasting</span> D+1</h2>
+  <p class="subtitle">Predicción de precios horarios del día siguiente con XGBoost y feature engineering energético</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>⚙️ Feature Engineering</h3>
+      <p>Variables diseñadas con lógica de mercado eléctrico:</p>
+      <ul style="margin-top:12px; margin-left:16px; color:var(--muted); font-size:0.875rem; line-height:2">
+        <li><code>lag_24h</code> — precio mismo día D-1</li>
+        <li><code>lag_168h</code> — misma hora semana anterior</li>
+        <li><code>ma_24h</code>, <code>std_24h</code> — nivel y volatilidad reciente</li>
+        <li><code>hour</code>, <code>dayofweek</code>, <code>season</code></li>
+        <li><code>is_weekend</code>, <code>is_holiday</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🧪 Protocolo de validación</h3>
+      <p>Sin data leakage: split temporal estricto.</p>
+      <ul style="margin-top:12px; margin-left:16px; color:var(--muted); font-size:0.875rem; line-height:2">
+        <li>Train: datos históricos 2023–2024</li>
+        <li>Test: últimos 6 meses (sin ver en train)</li>
+        <li>Baseline: persistencia lag-24h</li>
+        <li>Métricas: MAE, RMSE, R² (MAPE inaplicable por precios negativos)</li>
+        <li>Análisis de error por hora del día</li>
+      </ul>
+      <div class="tags">
+        <span class="tag">XGBoost</span>
+        <span class="tag">TimeSeriesSplit</span>
+        <span class="tag">scikit-learn</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MERCADO ELÉCTRICO -->
+<section id="mercado">
+  <h2>🏛️ Contexto: <span>Mercado Eléctrico Español</span></h2>
+  <p class="subtitle">OMIE gestiona el mercado spot mediante casación marginalista — el precio lo fija la última tecnología necesaria</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>📋 Merit Order — España</h3>
+      <div class="merit-item"><span class="merit-rank">🌬️</span><div><div class="merit-label">Eólica + Solar</div><div style="font-size:0.8rem;color:var(--muted)">Coste marginal ~0 €</div></div><span class="merit-price">≈ 0 €/MWh</span></div>
+      <div class="merit-item"><span class="merit-rank">⚛️</span><div><div class="merit-label">Nuclear</div><div style="font-size:0.8rem;color:var(--muted)">Carga base, sin emisiones CO₂</div></div><span class="merit-price">~7–15 €/MWh</span></div>
+      <div class="merit-item"><span class="merit-rank">💧</span><div><div class="merit-label">Hidráulica</div><div style="font-size:0.8rem;color:var(--muted)">Flexible, dependiente del embalse</div></div><span class="merit-price">~5–30 €/MWh</span></div>
+      <div class="merit-item"><span class="merit-rank">🔥</span><div><div class="merit-label">Gas CCGT</div><div style="font-size:0.8rem;color:var(--muted)">Tecnología marginal típica en España</div></div><span class="merit-price">~60–120 €/MWh</span></div>
+    </div>
+
+    <div class="grid-3" style="grid-column:1/-1" id="drivers-grid"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>⚡ OMIE Spot Analysis — Datos reales 2023–2025 | Análisis de mercado eléctrico español</p>
+  <p style="margin-top:8px">
+    <a href="https://aibanezdelacruz-tech.github.io/energy-portfolio/">Portfolio</a> ·
+    <a href="https://github.com/aibanezdelacruz-tech/omie-spot-analysis">GitHub</a> ·
+    <a href="https://www.omie.es">Fuente: OMIE</a>
+  </p>
+</footer>
+
+<script>
+// ── Carga de datos desde JSON ─────────────────────────────────────────────────
+const DARK = '#0f172a';
+const ACCENT = '#3b82f6';
+const GREEN = '#10b981';
+const MUTED = '#94a3b8';
+const LAYOUT_BASE = {
+  paper_bgcolor: '#1e293b', plot_bgcolor: '#1e293b',
+  font: { family: 'Inter, sans-serif', color: '#e2e8f0' },
+  margin: { t: 30, r: 20, l: 60, b: 50 },
+  xaxis: { gridcolor: 'rgba(255,255,255,0.06)', zerolinecolor: 'rgba(255,255,255,0.1)' },
+  yaxis: { gridcolor: 'rgba(255,255,255,0.06)', zerolinecolor: 'rgba(255,255,255,0.1)' },
+};
+
+// Datos de drivers del mercado (hardcoded, informativos)
+const drivers = [
+  { icon: '🛢️', title: 'Gas TTF', desc: 'Benchmark europeo de gas natural. Ciclos combinados fijan el precio en ~60–70% de las horas en España.' },
+  { icon: '🌿', title: 'Renovables', desc: 'Alta generación eólica/solar empuja precios a la baja — incluso negativos en 2024 por exceso solar.' },
+  { icon: '🌡️', title: 'Demanda', desc: 'Correlación con temperatura (calefacción/AC), día laboral, hora. Patrón doble pico laborable.' },
+  { icon: '💨', title: 'CO₂ (EUAs)', desc: 'Coste de derechos de emisión. A mayor precio CO₂, más caro producir con gas o carbón.' },
+  { icon: '💧', title: 'Hidráulica', desc: 'Nivel de embalses condiciona si la hidráulica compite con gas o lo desplaza.' },
+  { icon: '⚖️', title: 'Interconexiones', desc: 'Flujos con Francia modulan el precio. Congestión frecuente limita la integración ibérica.' },
+];
+const grid = document.getElementById('drivers-grid');
+grid.innerHTML = drivers.map(d => `
+  <div class="card">
+    <h3>${d.icon} ${d.title}</h3>
+    <p>${d.desc}</p>
+  </div>
+`).join('');
+
+// ── Heatmap chart ─────────────────────────────────────────────────────────────
+fetch('heatmap_data.json')
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('st-periodo').textContent = `2023–${data.year}`;
+    const trace = {
+      z: data.matrix, x: data.days, y: data.hours.map(h => `${h}:00`),
+      type: 'heatmap', colorscale: 'RdYlBu', reversescale: true,
+      colorbar: { title: '€/MWh', tickfont: { color: '#94a3b8' }, titlefont: { color: '#94a3b8' } },
+      hovertemplate: '<b>%{x} %{y}</b><br>Precio medio: %{z:.1f} €/MWh<extra></extra>'
+    };
+    Plotly.newPlot('heatmap-chart', [trace], {
+      ...LAYOUT_BASE,
+      margin: { t: 10, r: 80, l: 60, b: 40 },
+    }, { responsive: true, displayModeBar: false });
+  })
+  .catch(() => {
+    // Si no hay JSON todavía, mostrar placeholder
+    document.getElementById('heatmap-chart').innerHTML =
+      '<div style="height:380px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:0.9rem">Ejecuta <code>python src/export_charts_json.py</code> para generar los datos del chart.</div>';
+  });
+
+// ── Timeseries chart ──────────────────────────────────────────────────────────
+fetch('timeseries_data.json')
+  .then(r => r.json())
+  .then(data => {
+    const trace = {
+      x: data.dates, y: data.prices, type: 'scatter', mode: 'lines',
+      line: { color: ACCENT, width: 1.5 }, name: 'Precio diario',
+      fill: 'tozeroy', fillcolor: 'rgba(59,130,246,0.08)',
+      hovertemplate: '%{x}<br><b>%{y:.1f} €/MWh</b><extra></extra>'
+    };
+    // Media
+    const mean = data.prices.filter(Boolean).reduce((a,b) => a+b, 0) / data.prices.filter(Boolean).length;
+    const meanTrace = {
+      x: [data.dates[0], data.dates[data.dates.length-1]], y: [mean, mean],
+      mode: 'lines', line: { color: '#ef4444', dash: 'dash', width: 1.5 },
+      name: `Media: ${mean.toFixed(1)} €/MWh`,
+      hoverinfo: 'skip'
+    };
+    Plotly.newPlot('timeseries-chart', [trace, meanTrace], {
+      ...LAYOUT_BASE,
+      yaxis: { ...LAYOUT_BASE.yaxis, title: '€/MWh' },
+      legend: { font: { color: '#e2e8f0' }, bgcolor: 'rgba(0,0,0,0)' },
+      margin: { t: 10, r: 20, l: 70, b: 40 },
+    }, { responsive: true, displayModeBar: false });
+  })
+  .catch(() => {
+    document.getElementById('timeseries-chart').innerHTML =
+      '<div style="height:320px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:0.9rem">Genera los datos con <code>python src/export_charts_json.py</code></div>';
+  });
+
+// ── Stats desde JSON ──────────────────────────────────────────────────────────
+fetch('stats.json')
+  .then(r => r.json())
+  .then(s => {
+    document.getElementById('st-media').textContent = s.precio_medio + ' €';
+    document.getElementById('st-neg').textContent   = s.horas_negativas.toLocaleString();
+    document.getElementById('st-vol').textContent   = s.volatilidad + ' €';
+    document.getElementById('st-horas').textContent = s.horas_total.toLocaleString();
+  })
+  .catch(() => {});
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "mae_xgboost": 7.29,
+  "rmse_xgboost": 11.28,
+  "mae_baseline": 19.06,
+  "mejora_pct": 61.7,
+  "n_horas_train": 17232,
+  "n_horas_test": 4308,
+  "periodo_inicio": "2023-01-08",
+  "periodo_fin": "2025-09-30",
+  "horas_precio_negativo": 153,
+  "precio_medio": 79.31,
+  "precio_max": 240.0,
+  "precio_min": -5.0,
+  "mae_by_regime": {
+    "Negativo": 2.71,
+    "Muy bajo": 5.06,
+    "Normal": 8.41,
+    "Alto": 6.82,
+    "Extremo": 32.25
+  }
+}

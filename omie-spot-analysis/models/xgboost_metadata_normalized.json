@@ -1,0 +1,11 @@
+{
+  "train_mae": 1.2532009509969035,
+  "train_rmse": 2.5603190530650606,
+  "test_mae": 2.971730974283306,
+  "test_rmse": 6.206697935053459,
+  "n_features": 30,
+  "train_samples": 14893,
+  "test_samples": 3724,
+  "esios_normalized": true,
+  "timestamp": "2026-03-05T01:07:10.581334"
+}
