@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alejandro Ibáñez de la Cruz — Projects</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, Segoe UI, sans-serif;
+            background: linear-gradient(135deg, #0f1e36 0%, #162844 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #38bdf8, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle {
+            color: #7a9cc0;
+            font-size: 1.1rem;
+            margin-bottom: 48px;
+        }
+        .projects {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        .project-card {
+            background: rgba(56, 189, 248, 0.05);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 14px;
+            padding: 36px 24px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .project-card:hover {
+            border-color: rgba(56, 189, 248, 0.6);
+            background: rgba(56, 189, 248, 0.1);
+            transform: translateY(-4px);
+        }
+        .project-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+        .project-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        .project-card p {
+            color: #7a9cc0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .footer {
+            color: #7a9cc0;
+            font-size: 0.85rem;
+            margin-top: 40px;
+        }
+        .footer a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Alejandro Ibáñez de la Cruz</h1>
+        <p class="subtitle">Ingeniero Eléctrico & Data Scientist</p>
+        
+        <div class="projects">
+            <a href="/portfolio-energy-analyst/" class="project-card">
+                <div class="project-icon">⚡</div>
+                <h2>Portfolio Energético</h2>
+                <p>Análisis de mercados OMIE, forecasting de precios con XGBoost y visualizaciones interactivas.</p>
+            </a>
+            
+            <a href="/energia-europa/" class="project-card">
+                <div class="project-icon">🌍</div>
+                <h2>Energía en Europa</h2>
+                <p>Visualización de datos sobre la transición energética europea (2014–2019).</p>
+            </a>
+        </div>
+        
+        <div class="footer">
+            <p>
+                <a href="https://github.com/aibanezdelacruz-tech" target="_blank">GitHub</a> · 
+                <a href="https://linkedin.com/in/aibanezdelacruz" target="_blank">LinkedIn</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
