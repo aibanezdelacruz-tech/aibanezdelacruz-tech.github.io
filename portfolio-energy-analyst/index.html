@@ -429,7 +429,7 @@
             margin-bottom: 24px;
             transition: border-color .25s;
             display: grid;
-            grid-template-columns: 1fr auto;
+            grid-template-columns: 1fr 1fr;
             gap: 24px;
             align-items: start;
         }
@@ -497,8 +497,9 @@
         }
 
         .project-chart {
-            min-width: 200px;
-            max-width: 280px;
+            min-width: 300px;
+            max-width: 100%;
+            flex: 1;
         }
 
         /* ── MARKET KNOWLEDGE ────────────────────────────────────────────── */
@@ -659,15 +660,15 @@
         </h1>
         <p class="subtitle">
             Ingeniero Eléctrico Junior con orientación en análisis de mercados eléctricos y forecasting de precios.
-            Experiencia en modelado predictivo (XGBoost), análisis de datos y soluciones analíticas con Python.
-            Apasionado por la transición energética y el trading algorítmico.
+            Experiencia en Data Science, automatización (N8N), análisis de datos masivos y APIs REST.
+            Con rigor técnico en proyectos energéticos reales y comunicación clara de insights.
         </p>
         <div class="hero-btns">
             <a href="#proyectos" class="btn btn-accent">Ver proyectos ↓</a>
             <a href="https://aibanezdelacruz-tech.github.io/omie-spot-analysis/" class="btn btn-green" target="_blank">
                 ⚡ Demo: OMIE Analysis
             </a>
-            <a href="https://linkedin.com/in/aibanezdelacruz" class="btn btn-ghost" target="_blank">🔗 LinkedIn</a>
+            <a href="https://www.linkedin.com/in/alejandro-ib%C3%A1%C3%B1ez-de-la-cruz-238842121/" class="btn btn-ghost" target="_blank">🔗 LinkedIn</a>
         </div>
     </div>
 
@@ -682,14 +683,14 @@
         <div class="about-grid">
             <div class="about-text">
                 <p>
-                    <strong>Ingeniero Eléctrico Junior enfocado en análisis de mercados energéticos y forecasting de precios.</strong>
-                    Formación técnica en sistemas eléctricos combinada con experiencia en Data Science y automatización.
-                    Especialización en análisis de datos de mercados (OMIE, MIBEL, ESIOS) con herramientas avanzadas (Python, XGBoost).
+                    <strong>Ingeniero Eléctrico Junior enfocado en Data Science del sector energético.</strong>
+                    Formación en sistemas eléctricos (UPV) + Máster Ciencia de Datos (UOC, en curso).
+                    Experiencia real en fotovoltaica, sistemas ferroviarios eléctricos y automatización de workflows.
                 </p>
                 <p>
-                    <strong>Enfoque:</strong> Traduzco problemas técnicos complejos en soluciones claras y accionables.
-                    Tengo capacidad para comunicar rigor técnico a audiencias no especializadas, código productivo en Python,
-                    y experiencia en pipelines de datos masivos y modelos predictivos (XGBoost).
+                    <strong>Enfoque profesional:</strong> Análisis riguroso de datos de mercados energéticos con herramientas modernas (Python, XGBoost, APIs REST).
+                    Experiencia docente que me permite comunicar resultados técnicos de forma clara.
+                    Actualmente trabajo en automatización de datos (N8N) y análisis en tiempo real de RRSS.
                 </p>
                 <div style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap">
                     <a href="#proyectos" class="btn btn-accent">⚡ Ver proyecto OMIE ↓</a>
@@ -752,33 +753,33 @@
                     solar valley, precios negativos) y modelo de forecasting D+1 con XGBoost.
                 </p>
                 <div class="project-results">
-                    Dataset: <span>18,920 horas</span> (OMIE 2023-25) + <span>Mix Generacion</span> (ESIOS REE)<br>
-                    Modelo: <span>XGBoost</span> (ESIOS Enriched) &middot;
-                    MAE: <span>7.91 EUR€/MWh</span> &middot; RMSE: <span>11.86 EUR€/MWh</span><br>
-                    Mejora: <span>-61.0% error</span> vs Baseline de Persistencia (lag 24h)
+                    Dataset: <span>24,096 horas</span> (OMIE 2023-2025) + <span>Mix Generación</span> (ESIOS REE)<br>
+                    Modelo: <span>XGBoost + Feature Engineering</span> &middot;
+                    MAE: <span style="font-size:1.1em">6.91 EUR€/MWh</span> &middot; RMSE: <span>10.60 EUR€/MWh</span><br>
+                    Mejora: <span style="font-size:1.1em; color:#34d399">↓ 62.3%</span> vs Baseline (18.33 → 6.91 €/MWh)
                 </div>
 
                 <!-- Tarjetas de metricas clave -->
                 <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:12px; margin-bottom:16px">
                     <div
-                        style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
-                        <div style="font-size:1.4rem;font-weight:700;color:var(--accent2)">7.91</div>
-                        <div style="font-size:0.72rem;color:var(--muted)">MAE (EUR€/MWh)</div>
+                        style="background:rgba(52,211,153,0.15);border:2px solid rgba(52,211,153,0.4);border-radius:10px;padding:16px;text-align:center">
+                        <div style="font-size:1.8rem;font-weight:800;color:#34d399">6.91</div>
+                        <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;font-weight:600">MAE (EUR€/MWh)</div>
+                    </div>
+                    <div
+                        style="background:rgba(52,211,153,0.15);border:2px solid rgba(52,211,153,0.4);border-radius:10px;padding:16px;text-align:center">
+                        <div style="font-size:1.8rem;font-weight:800;color:#34d399">62.3%</div>
+                        <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;font-weight:600">Mejora vs Baseline</div>
                     </div>
                     <div
                         style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
-                        <div style="font-size:1.4rem;font-weight:700;color:var(--accent)">61%</div>
-                        <div style="font-size:0.72rem;color:var(--muted)">Mejora vs Baseline</div>
+                        <div style="font-size:1.4rem;font-weight:700;color:var(--accent)">10.60</div>
+                        <div style="font-size:0.72rem;color:var(--muted)">RMSE (EUR€/MWh)</div>
                     </div>
                     <div
                         style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
-                        <div style="font-size:1.4rem;font-weight:700;color:var(--purple)">128</div>
-                        <div style="font-size:0.72rem;color:var(--muted)">Horas precio negativo</div>
-                    </div>
-                    <div
-                        style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
-                        <div style="font-size:1.4rem;font-weight:700;color:var(--accent3)">18,920</div>
-                        <div style="font-size:0.72rem;color:var(--muted)">Horas entrenamiento</div>
+                        <div style="font-size:1.4rem;font-weight:700;color:var(--accent3)">24,096</div>
+                        <div style="font-size:0.72rem;color:var(--muted)">Horas dataset</div>
                     </div>
                 </div>
                 <div style="margin-bottom:16px; display:flex; flex-wrap:wrap; gap:6px">
@@ -797,6 +798,8 @@
                     <button onclick="switchChart('timeseries'); return false;" class="btn btn-accent">📊 Serie Temporal</button>
                     <a href="https://aibanezdelacruz-tech.github.io/omie-spot-analysis/" class="btn btn-green"
                         target="_blank">⚡ Ver demo completa</a>
+                    <a href="https://github.com/aibanezdelacruz-tech/aibanezdelacruz-tech.github.io/tree/main/omie-spot-analysis/notebooks" class="btn btn-ghost"
+                        target="_blank">📔 Ver Notebooks</a>
                     <a href="https://github.com/aibanezdelacruz-tech/aibanezdelacruz-tech.github.io/tree/main/omie-spot-analysis" class="btn btn-ghost"
                         target="_blank">📦 Repositorio</a>
                 </div>
