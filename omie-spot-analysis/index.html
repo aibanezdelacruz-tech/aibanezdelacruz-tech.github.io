@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMIE Spot Price Analysis</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, Segoe UI, sans-serif;
+            background: linear-gradient(135deg, #0f1e36 0%, #162844 100%);
+            color: #e2e8f0;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #38bdf8, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle {
+            color: #7a9cc0;
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+        }
+        .section {
+            background: rgba(56, 189, 248, 0.05);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+        .section h2 {
+            color: #38bdf8;
+            margin-bottom: 16px;
+            font-size: 1.3rem;
+        }
+        .section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .section li {
+            padding: 8px 0;
+            color: #7a9cc0;
+        }
+        .section li:before {
+            content: "→ ";
+            color: #34d399;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .metric {
+            display: inline-block;
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 8px 12px 8px 0;
+            font-weight: 600;
+            color: #34d399;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+        .results-table th {
+            background: rgba(56, 189, 248, 0.1);
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+        }
+        .results-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .results-table tr:hover {
+            background: rgba(56, 189, 248, 0.05);
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: #38bdf8;
+            color: #060d1a;
+        }
+        .btn-primary:hover {
+            background: #7dd3fc;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: #38bdf8;
+            border: 2px solid #38bdf8;
+        }
+        .btn-secondary:hover {
+            background: rgba(56, 189, 248, 0.1);
+            transform: translateY(-2px);
+        }
+        .footer {
+            text-align: center;
+            color: #7a9cc0;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(56, 189, 248, 0.2);
+        }
+        .footer a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 OMIE Spot Price Analysis</h1>
+        <p class="subtitle">Análisis completo de precios horarios del mercado diario español (2023–2025)</p>
+
+        <div class="section">
+            <h2>📈 Resultados</h2>
+            <table class="results-table">
+                <tr>
+                    <th>Modelo</th>
+                    <th>MAE (€/MWh)</th>
+                    <th>RMSE (€/MWh)</th>
+                    <th>Mejora</th>
+                </tr>
+                <tr>
+                    <td>Baseline (persistencia lag-24h)</td>
+                    <td>18.33</td>
+                    <td>26.90</td>
+                    <td>—</td>
+                </tr>
+                <tr>
+                    <td><strong>XGBoost + ESIOS</strong></td>
+                    <td><strong>6.91</strong></td>
+                    <td><strong>10.60</strong></td>
+                    <td><strong>62.3% ↓</strong></td>
+                </tr>
+            </table>
+            <div style="color: #7a9cc0; font-size: 0.9rem;">
+                <span class="metric">Dataset: 24,096 horas (2023-2025)</span>
+                <span class="metric">Train: 19,000 horas</span>
+                <span class="metric">Test: 5,000 horas (temporal split)</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📁 Estructura del Proyecto</h2>
+            <ul>
+                <li><strong>notebooks/</strong> — Análisis interactivos (ejecutar en orden)</li>
+                <li><strong>src/</strong> — Módulos reutilizables (features, ESIOS client, loaders)</li>
+                <li><strong>data/</strong> — Raw data descargada desde OMIE y ESIOS</li>
+                <li><strong>models/</strong> — XGBoost modelo entrenado (.json, .pkl)</li>
+                <li><strong>docs/</strong> — Datos exportados para visualización web</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🔬 Metodología</h2>
+            <ul>
+                <li>Ingesta de datos: Descarga directa OMIE (precio diario) + ESIOS REE (generación, demanda)</li>
+                <li>Feature Engineering: Lags, rolling stats, features de mercado, variables trigonométricas</li>
+                <li>Modelado: XGBoost con validación temporal (sin data leakage)</li>
+                <li>Validación: Coherencia energética verificada ✅</li>
+                <li>Análisis avanzado: Comportamiento en precios negativos, curtailment solar</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🛠️ Tech Stack</h2>
+            <ul>
+                <li><strong>Data</strong>: Python, pandas, numpy</li>
+                <li><strong>ML</strong>: XGBoost, scikit-learn</li>
+                <li><strong>Viz</strong>: Plotly, matplotlib</li>
+                <li><strong>APIs</strong>: OMIE REST, ESIOS (REE)</li>
+            </ul>
+        </div>
+
+        <div class="section" style="text-align: center;">
+            <h2>Explora el proyecto</h2>
+            <div class="cta-buttons">
+                <a href="notebooks/" class="btn btn-primary">📔 Ver Notebooks</a>
+                <a href="docs/" class="btn btn-primary">📊 Ver Visualizaciones</a>
+                <a href="README.md" class="btn btn-secondary">📖 Leer README</a>
+                <a href="https://github.com/aibanezdelacruz-tech/aibanezdelacruz-tech.github.io/tree/main/omie-spot-analysis" 
+                   class="btn btn-secondary" target="_blank">🔗 GitHub</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>
+                Proyecto completado como parte del portfolio energético de Alejandro Ibáñez de la Cruz<br>
+                <a href="/">← Volver al índice</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
