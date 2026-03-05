@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alejandro Ibáñez de la Cruz — Energy Data Analyst Portfolio</title>
+    <meta name="description"
+        content="Alejandro Ibáñez de la Cruz — Ingeniero Eléctrico & Data Scientist. Portfolio especializado en análisis de mercados energéticos, forecasting de precios OMIE con XGBoost, análisis de datos del sector eléctrico español y automatizaciones con IA.">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        :root {
+            --bg: #060d1a;
+            --bg2: #0f1e36;
+            --bg3: #162844;
+            --bg4: #1e3a5f;
+            --accent: #38bdf8;
+            --accent2: #34d399;
+            --accent3: #fb923c;
+            --purple: #a78bfa;
+            --text: #e2e8f0;
+            --muted: #7a9cc0;
+            --border: rgba(56, 189, 248, 0.1);
+            --glow: rgba(56, 189, 248, 0.15);
+            --radius: 14px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* BACKGROUND ANIMATED GRID */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image: linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        /* ── NAV ─────────────────────────────────────────────────────────── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            background: rgba(6, 13, 26, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 40px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-logo {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--accent);
+            letter-spacing: -.01em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color .2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        .nav-cta {
+            margin-left: auto;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all .2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        .btn-accent:hover {
+            background: #7dd3fc;
+            transform: translateY(-1px);
+            box-shadow: 0 0 20px var(--glow);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg2);
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .btn-green {
+            background: var(--accent2);
+            color: var(--bg);
+        }
+
+        .btn-green:hover {
+            background: #6ee7b7;
+            transform: translateY(-1px);
+        }
+
+        /* ── HERO ────────────────────────────────────────────────────────── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 100px 24px 60px;
+            position: relative;
+        }
+
+        /* Glow blob */
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            color: var(--accent);
+            border-radius: 30px;
+            padding: 6px 18px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: .06em;
+            margin-bottom: 28px;
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            background: var(--accent2);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            display: inline-block;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1)
+            }
+
+            50% {
+                opacity: .6;
+                transform: scale(1.3)
+            }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 4rem);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 16px;
+            letter-spacing: -.02em;
+        }
+
+        .hero h1 .grad {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 50%, var(--accent2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            color: var(--muted);
+            max-width: 580px;
+            margin: 0 auto 40px;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+
+        /* Terminal badge */
+        .terminal {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 28px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            color: var(--muted);
+            text-align: left;
+            max-width: 480px;
+            line-height: 2;
+            box-shadow: 0 0 40px rgba(56, 189, 248, 0.06);
+        }
+
+        .terminal .kw {
+            color: var(--purple);
+        }
+
+        .terminal .str {
+            color: var(--accent2);
+        }
+
+        .terminal .num {
+            color: var(--accent3);
+        }
+
+        .terminal .fn {
+            color: var(--accent);
+        }
+
+        .terminal .cmt {
+            color: #4a6785;
+        }
+
+        /* ── ABOUT ───────────────────────────────────────────────────────── */
+        .section {
+            padding: 80px 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-header {
+            margin-bottom: 44px;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 700;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        .about-text p {
+            color: var(--muted);
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .about-text strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .about-facts {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .fact {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .fact .icon {
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .fact .label {
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+
+        .fact .value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* ── SKILLS ──────────────────────────────────────────────────────── */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .skill-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: all .25s;
+        }
+
+        .skill-card:hover {
+            border-color: rgba(56, 189, 248, 0.3);
+            background: var(--bg3);
+            transform: translateY(-3px);
+        }
+
+        .skill-card .ico {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+        }
+
+        .skill-card h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .skill-tag {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.08);
+            color: var(--accent);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 5px;
+            padding: 2px 9px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            margin: 3px 2px;
+        }
+
+        .skill-tag.green {
+            background: rgba(52, 211, 153, 0.08);
+            color: var(--accent2);
+            border-color: rgba(52, 211, 153, 0.2);
+        }
+
+        .skill-tag.orange {
+            background: rgba(251, 146, 60, 0.08);
+            color: var(--accent3);
+            border-color: rgba(251, 146, 60, 0.2);
+        }
+
+        /* ── PROJECTS ────────────────────────────────────────────────────── */
+        .project-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 36px;
+            margin-bottom: 24px;
+            transition: border-color .25s;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .project-card:hover {
+            border-color: rgba(56, 189, 248, 0.3);
+        }
+
+        .project-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+
+        .badge-main {
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--accent);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .badge-extra {
+            background: rgba(52, 211, 153, 0.12);
+            color: var(--accent2);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+
+        .project-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .project-card p {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            line-height: 1.7;
+        }
+
+        .project-results {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            background: rgba(56, 189, 248, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            color: var(--muted);
+        }
+
+        .project-results span {
+            color: var(--accent2);
+            font-weight: 600;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .project-chart {
+            min-width: 200px;
+            max-width: 280px;
+        }
+
+        /* ── MARKET KNOWLEDGE ────────────────────────────────────────────── */
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .market-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            border-top: 2px solid var(--accent);
+            transition: transform .2s;
+        }
+
+        .market-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .market-card h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        .market-card ul {
+            list-style: none;
+        }
+
+        .market-card li {
+            font-size: 0.83rem;
+            color: var(--muted);
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .market-card li:last-child {
+            border-bottom: none;
+        }
+
+        .market-card li::before {
+            content: '→ ';
+            color: var(--accent2);
+        }
+
+        /* ── CONTACT ─────────────────────────────────────────────────────── */
+        .contact-box {
+            background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 52px;
+            text-align: center;
+        }
+
+        .contact-box h2 {
+            margin-bottom: 12px;
+        }
+
+        .contact-box p {
+            color: var(--muted);
+            margin-bottom: 36px;
+            font-size: 0.95rem;
+        }
+
+        .contact-links {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ── FOOTER ──────────────────────────────────────────────────────── */
+        footer {
+            border-top: 1px solid var(--border);
+            text-align: center;
+            padding: 28px 24px;
+            color: var(--muted);
+            font-size: 0.8rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* ── DIVIDER ─────────────────────────────────────────────────────── */
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0 40px;
+        }
+
+        /* ── RESPONSIVE ──────────────────────────────────────────────────── */
+        @media(max-width:768px) {
+            nav {
+                padding: 0 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .section {
+                padding: 60px 20px;
+            }
+
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-card {
+                grid-template-columns: 1fr;
+            }
+
+            .project-chart {
+                display: none;
+            }
+
+            .contact-box {
+                padding: 36px 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <span class="nav-logo">⚡ aibanezdelacruz</span>
+        <div class="nav-links">
+            <a href="#sobre-mi">Sobre mí</a>
+            <a href="#proyectos">Proyectos</a>
+            <a href="#mercado">Mercado</a>
+            <a href="#skills">Skills</a>
+            <a href="#contacto">Contacto</a>
+        </div>
+        <div class="nav-cta">
+            <a href="https://github.com/aibanezdelacruz-tech" class="btn btn-ghost" target="_blank">💻 GitHub</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-eyebrow">
+            <span class="dot"></span>
+            Energy Data Analyst · Valencia, España
+        </div>
+        <h1>
+            Alejandro Ibáñez<br>
+            <span class="grad">de la Cruz</span>
+        </h1>
+        <p class="subtitle">
+            Ingeniero Eléctrico y Analista Energético Junior especializado en mercados eléctricos,
+            forecasting de precios spot y visualización de datos del sector. Combino perfil técnico con
+            más de 6 años de experiencia docente.
+        </p>
+        <div class="hero-btns">
+            <a href="#proyectos" class="btn btn-accent">Ver proyectos ↓</a>
+            <a href="https://aibanezdelacruz-tech.github.io/omie-spot-analysis/" class="btn btn-green" target="_blank">
+                ⚡ Demo: OMIE Analysis
+            </a>
+            <a href="https://linkedin.com/in/aibanezdelacruz" class="btn btn-ghost" target="_blank">🔗 LinkedIn</a>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- SOBRE MÍ -->
+    <section class="section" id="sobre-mi">
+        <div class="section-header">
+            <div class="section-label">01 · Sobre mí</div>
+            <h2>Perfil profesional</h2>
+        </div>
+        <div class="about-grid">
+            <div class="about-text">
+                <p>
+                    <strong>Ingeniero Eléctrico y especialista en análisis de datos del sector energético.</strong>
+                    Combino formación técnica en sistemas eléctricos con experiencia en Data Science, automatizaciones e IA.
+                    Especializado en análisis de mercados (OMIE, MIBEL, ESIOS) y development de soluciones analíticas.
+                </p>
+                <p>
+                    <strong>Enfoque:</strong> Traduzco problemas técnicos complejos en soluciones claras y accionables.
+                    Tengo capacidad para comunicar rigor técnico a audiencias no especializadas, código productivo en Python,
+                    y experiencia en pipelines de datos masivos y modelos predictivos (XGBoost).
+                </p>
+                <div style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap">
+                    <a href="https://aibanezdelacruz-tech.github.io/omie-spot-analysis/" class="btn btn-accent"
+                        target="_blank">⚡ Ver proyecto OMIE</a>
+                    <a href="https://github.com/aibanezdelacruz-tech" class="btn btn-ghost" target="_blank">💻
+                        GitHub</a>
+                </div>
+            </div>
+            <div class="about-facts">
+                <div class="fact"><span class="icon">⚡</span>
+                    <div>
+                        <div class="label">Especialización</div>
+                        <div class="value">Mercados Energéticos</div>
+                    </div>
+                </div>
+                <div class="fact"><span class="icon">🎓</span>
+                    <div>
+                        <div class="label">Formación</div>
+                        <div class="value">Ing. Eléctrico · MSc Data Science</div>
+                    </div>
+                </div>
+                <div class="fact"><span class="icon">🐍</span>
+                    <div>
+                        <div class="label">Stack principal</div>
+                        <div class="value">Python · pandas · XGBoost · Plotly</div>
+                    </div>
+                </div>
+                <div class="fact"><span class="icon">📊</span>
+                    <div>
+                        <div class="label">Datos manejados</div>
+                        <div class="value">OMIE · ESIOS (REE) · ENTSO-E</div>
+                    </div>
+                </div>
+                <div class="fact"><span class="icon">📍</span>
+                    <div>
+                        <div class="label">Ubicación</div>
+                        <div class="value">Valencia, España · Remoto</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- PROYECTOS -->
+    <section class="section" id="proyectos">
+        <div class="section-header">
+            <div class="section-label">02 · Proyectos</div>
+            <h2>Portfolio técnico</h2>
+        </div>
+
+        <!-- Proyecto principal -->
+        <div class="project-card">
+            <div>
+                <span class="project-badge badge-main">⭐ Proyecto principal</span>
+                <h3>⚡ OMIE Spot Price Analysis</h3>
+                <p>
+                    Pipeline completo de análisis de precios horarios del mercado diario español (2023–2025):
+                    descarga y procesamiento de datos reales OMIE, EDA con contexto energético (merit order,
+                    solar valley, precios negativos) y modelo de forecasting D+1 con XGBoost.
+                </p>
+                <div class="project-results">
+                    Dataset: <span>18,920 horas</span> (OMIE 2023-25) + <span>Mix Generacion</span> (ESIOS REE)<br>
+                    Modelo: <span>XGBoost</span> (ESIOS Enriched) &middot;
+                    MAE: <span>7.91 EUR€/MWh</span> &middot; RMSE: <span>11.86 EUR€/MWh</span><br>
+                    Mejora: <span>-61.0% error</span> vs Baseline de Persistencia (lag 24h)
+                </div>
+
+                <!-- Tarjetas de metricas clave -->
+                <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:12px; margin-bottom:16px">
+                    <div
+                        style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+                        <div style="font-size:1.4rem;font-weight:700;color:var(--accent2)">7.91</div>
+                        <div style="font-size:0.72rem;color:var(--muted)">MAE (EUR€/MWh)</div>
+                    </div>
+                    <div
+                        style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+                        <div style="font-size:1.4rem;font-weight:700;color:var(--accent)">61%</div>
+                        <div style="font-size:0.72rem;color:var(--muted)">Mejora vs Baseline</div>
+                    </div>
+                    <div
+                        style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+                        <div style="font-size:1.4rem;font-weight:700;color:var(--purple)">128</div>
+                        <div style="font-size:0.72rem;color:var(--muted)">Horas precio negativo</div>
+                    </div>
+                    <div
+                        style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+                        <div style="font-size:1.4rem;font-weight:700;color:var(--accent3)">18,920</div>
+                        <div style="font-size:0.72rem;color:var(--muted)">Horas entrenamiento</div>
+                    </div>
+                </div>
+                <div style="margin-bottom:16px; display:flex; flex-wrap:wrap; gap:6px">
+                    <span class="skill-tag">Python</span><span class="skill-tag">pandas</span>
+                    <span class="skill-tag">XGBoost</span><span class="skill-tag">Plotly</span>
+                    <span class="skill-tag green">OMIE data</span><span class="skill-tag green">ESIOS API</span>
+                    <span class="skill-tag orange">scikit-learn</span><span class="skill-tag orange">Feature Eng.</span>
+                    <span class="skill-tag">Papermill</span><span class="skill-tag">Parquet</span>
+                </div>
+
+                <div style="margin-top:24px; border-top:1px solid var(--border); padding-top:24px;">
+                    <h4 style="margin-bottom:12px; color:var(--text); font-size:1.1rem;">Visualización Interactiva Horia (Datos Reales OMIE + ESIOS)</h4>
+                    <p style="font-size:0.9rem; color:var(--muted); margin-bottom:20px;">
+                        Estos gráficos interactivos representan la salida directa de mi pipeline de análisis. Puedes hacer <strong>zoom, pan y hover</strong> sobre los datos para evaluar la depresión de precios por penetración solar y los efectos de gas.
+                    </p>
+                    
+                    <div style="background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:20px;">
+                        <h5 style="margin-bottom:4px; font-size:0.95rem; font-weight:600;">🌡️ Mapa de Calor: Precio Medio por Hora y Día (Solar Valley)</h5>
+                        <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px;">Se percibe nítidamente el <em>solar valley</em> (depresión de precios diurnos) frente al <em>evening peak</em> donde el Ciclo Combinado marca el precio maginal.</p>
+                        <div id="heatmap-chart" style="height:380px; width:100%;"></div>
+                    </div>
+
+                    <div style="background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:16px;">
+                        <h5 style="margin-bottom:4px; font-size:0.95rem; font-weight:600;">📈 Evolución Histórica del Precio Diario OMIE</h5>
+                        <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px;">Desplome estructural de precios en primavera de 2024 y aumento de varianza intra-anual provocado por el cambio de paradigma de generación (128 horas a precio negativo).</p>
+                        <div id="timeseries-chart" style="height:320px; width:100%;"></div>
+                    </div>
+                </div>
+
+                <div class="project-links">
+                    <a href="https://aibanezdelacruz-tech.github.io/omie-spot-analysis/" class="btn btn-accent"
+                        target="_blank">Demo interactiva</a>
+                    <a href="https://github.com/aibanezdelacruz-tech/omie-spot-analysis" class="btn btn-ghost"
+                        target="_blank">📦 Repositorio completo</a>
+                    <a href="https://github.com/aibanezdelacruz-tech/omie-spot-analysis/blob/main/notebooks/01_eda.ipynb"
+                        class="btn btn-ghost" target="_blank">EDA</a>
+                    <a href="https://github.com/aibanezdelacruz-tech/omie-spot-analysis/blob/main/notebooks/03_forecasting.ipynb"
+                        class="btn btn-ghost" target="_blank">Forecasting</a>
+                    <a href="https://github.com/aibanezdelacruz-tech/omie-spot-analysis/blob/main/notebooks/04_advanced_analysis.ipynb"
+                        class="btn btn-ghost" target="_blank">Análisis</a>
+                </div>
+            </div>
+            <div class="project-chart" id="mini-chart"></div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- CONOCIMIENTO DE MERCADO -->
+    <section class="section" id="mercado">
+        <div class="section-header">
+            <div class="section-label">03 · Mercado eléctrico</div>
+            <h2>Conocimiento del sector</h2>
+        </div>
+        <div class="market-grid">
+            <div class="market-card">
+                <h3>🏛️ OMIE — Mercado Spot</h3>
+                <ul>
+                    <li>Sistema marginalista de casación</li>
+                    <li>Merit order: renovables → nuclear → gas</li>
+                    <li>Mercado diario (subasta 12:00 CET D-1)</li>
+                    <li>Mercado intradiario (6 sesiones)</li>
+                    <li>Precios horarios España y Portugal</li>
+                </ul>
+            </div>
+            <div class="market-card" style="border-top-color:var(--accent2)">
+                <h3 style="color:var(--accent2)">📡 ESIOS (REE)</h3>
+                <ul>
+                    <li>+10.000 indicadores disponibles en API</li>
+                    <li>Demanda real y prevista (peninsular)</li>
+                    <li>Generación por tecnología (eólica, solar...)</li>
+                    <li>Servicios de ajuste y desvíos</li>
+                    <li>PVPC, embalses, interconexiones</li>
+                </ul>
+            </div>
+            <div class="market-card" style="border-top-color:var(--purple)">
+                <h3 style="color:var(--purple)">📈 Drivers de precio</h3>
+                <ul>
+                    <li>Gas CCGT (Generación Gas Real-Time)</li>
+                    <li>Generación renovable (efecto merit order)</li>
+                    <li>CO₂ — derechos de emisión (EUAs)</li>
+                    <li>Demanda prevista (peninsular)</li>
+                    <li>Disponibilidad nuclear e hidráulica</li>
+                </ul>
+            </div>
+            <div class="market-card" style="border-top-color:var(--accent3)">
+                <h3 style="color:var(--accent3)">🌍 Contexto 2023–2025</h3>
+                <ul>
+                    <li>Normalización post-crisis energética 2022</li>
+                    <li>Precios medios: 50–80 €€/MWh</li>
+                    <li>Horas negativas: crecimiento solar FV</li>
+                    <li>Volatilidad estructural persistente</li>
+                    <li>Creciente relevancia de la cobertura</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SKILLS -->
+    <section class="section" id="skills">
+        <div class="section-header">
+            <div class="section-label">04 · Habilidades</div>
+            <h2>Stack técnico</h2>
+        </div>
+        <div class="skills-grid">
+            <div class="skill-card">
+                <div class="ico">🐍</div>
+                <h3>Data Science & ML</h3>
+                <div>
+                    <span class="skill-tag">Python</span><span class="skill-tag">pandas</span>
+                    <span class="skill-tag">numpy</span><span class="skill-tag">scikit-learn</span>
+                    <span class="skill-tag">XGBoost</span><span class="skill-tag">Prophet</span>
+                </div>
+            </div>
+            <div class="skill-card">
+                <div class="ico">📊</div>
+                <h3>Visualización</h3>
+                <div>
+                    <span class="skill-tag green">Plotly</span><span class="skill-tag green">matplotlib</span>
+                    <span class="skill-tag green">seaborn</span><span class="skill-tag green">Power BI</span>
+                    <span class="skill-tag green">GitHub Pages</span>
+                </div>
+            </div>
+            <div class="skill-card">
+                <div class="ico">⚡</div>
+                <h3>Sector Energético</h3>
+                <div>
+                    <span class="skill-tag orange">OMIE</span><span class="skill-tag orange">ESIOS (REE)</span>
+                    <span class="skill-tag orange">ENTSO-E</span><span class="skill-tag orange">Merit order</span>
+                    <span class="skill-tag orange">Forecasting</span>
+                </div>
+            </div>
+            <div class="skill-card">
+                <div class="ico">🔧</div>
+                <h3>Herramientas</h3>
+                <div>
+                    <span class="skill-tag">SQL</span><span class="skill-tag">Git</span>
+                    <span class="skill-tag">Excel avanzado</span><span class="skill-tag">Jupyter</span>
+                    <span class="skill-tag">APIs REST</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- CONTACTO -->
+    <section class="section" id="contacto">
+        <div class="contact-box">
+            <div class="section-label" style="text-align:center">05 · Contacto</div>
+            <h2 style="margin-bottom:12px">¿Hablamos?</h2>
+            <p>Interesado en roles de análisis de mercados energéticos, forecasting y optimización de compra de energía.
+            </p>
+            <div class="contact-links">
+                <a href="mailto:tu@email.com" class="btn btn-accent">✉️ Email</a>
+                <a href="https://linkedin.com/in/aibanezdelacruz" class="btn btn-ghost" target="_blank">🔗 LinkedIn</a>
+                <a href="https://github.com/aibanezdelacruz-tech" class="btn btn-ghost" target="_blank">💻 GitHub</a>
+                <a href="https://aibanezdelacruz-tech.github.io/omie-spot-analysis/" class="btn btn-green"
+                    target="_blank">⚡ Demo OMIE</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2026 Alejandro Ibáñez de la Cruz · Energy Data Analyst</p>
+        <p style="margin-top:6px">
+            Hecho con Python, Plotly y entusiasmo por la transición energética ⚡ ·
+            <a href="https://github.com/aibanezdelacruz-tech/energy-portfolio">Ver código</a>
+        </p>
+    </footer>
+
+    <script>
+        // Grafico real: precios mensuales OMIE cargados desde JSON exportado por el modelo
+        async function loadPortfolioChart() {
+            const chartEl = document.getElementById('mini-chart');
+            if (!chartEl) return;
+
+            try {
+                // Intentar cargar datos reales desde el JSON exportado por el notebook
+                const res = await fetch('assets/data/monthly_prices.json');
+                if (!res.ok) throw new Error('JSON no disponible');
+                const data = await res.json();
+
+                Plotly.newPlot('mini-chart', [
+                    {
+                        x: data.dates,
+                        y: data.p90,
+                        type: 'scatter', mode: 'lines', name: 'P90',
+                        line: { color: 'rgba(56,189,248,0.3)', width: 0 },
+                        fill: 'tonexty', fillcolor: 'rgba(56,189,248,0.06)',
+                        showlegend: false
+                    },
+                    {
+                        x: data.dates,
+                        y: data.p10,
+                        type: 'scatter', mode: 'lines', name: 'P10',
+                        line: { color: 'rgba(56,189,248,0.3)', width: 0 },
+                        fill: 'tozeroy', fillcolor: 'rgba(56,189,248,0.04)',
+                        showlegend: false
+                    },
+                    {
+                        x: data.dates,
+                        y: data.mean,
+                        type: 'scatter', mode: 'lines+markers', name: 'Media mensual',
+                        line: { color: '#38bdf8', width: 2.5 },
+                        marker: { size: 5, color: '#38bdf8' }
+                    },
+                    {
+                        x: data.dates,
+                        y: Array(data.dates.length).fill(0),
+                        type: 'scatter', mode: 'lines', name: 'Precio = 0',
+                        line: { color: '#ef4444', width: 1, dash: 'dot' },
+                        showlegend: false
+                    }
+                ], {
+                    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+                    font: { family: 'Inter', color: '#7a9cc0', size: 11 },
+                    margin: { t: 20, r: 10, l: 40, b: 30 },
+                    xaxis: { gridcolor: 'rgba(255,255,255,0.04)', tickfont: { size: 9 } },
+                    yaxis: { gridcolor: 'rgba(255,255,255,0.04)', title: { text: 'EUR€/MWh', font: { size: 10 } }, tickfont: { size: 9 } },
+                    legend: { font: { color: '#e2e8f0', size: 10 }, bgcolor: 'rgba(0,0,0,0)' },
+                    title: { text: 'Precio OMIE Mensual (2023-2025) - Datos Reales', font: { size: 11, color: '#94a3b8' }, x: 0.5 }
+                }, { responsive: true, displayModeBar: false });
+
+            } catch (e) {
+                // Fallback: perfil horario tipico si el JSON no esta disponible
+                const hours = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+                const profile = [32, 28, 26, 25, 25, 27, 32, 45, 62, 70, 68, 58, 42, 38, 40, 52, 65, 78, 82, 80, 74, 65, 52, 40];
+                Plotly.newPlot('mini-chart', [{ x: hours, y: profile, type: 'scatter', mode: 'lines', name: 'Perfil tipico', line: { color: '#38bdf8', width: 2 }, fill: 'tozeroy', fillcolor: 'rgba(56,189,248,0.08)' }],
+                    { paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', font: { family: 'Inter', color: '#7a9cc0', size: 11 }, margin: { t: 10, r: 10, l: 40, b: 30 }, xaxis: { gridcolor: 'rgba(255,255,255,0.05)', tickfont: { size: 9 } }, yaxis: { gridcolor: 'rgba(255,255,255,0.05)', title: { text: 'EUR€/MWh', font: { size: 10 } }, tickfont: { size: 9 } } },
+                    { responsive: true, displayModeBar: false });
+            }
+        }
+
+        loadPortfolioChart();
+    </script>
+
+<script>
+const DARK = '#0f172a';
+const ACCENT = '#3b82f6';
+const LAYOUT_BASE = {
+  paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+  font: { family: 'Inter, sans-serif', color: '#e2e8f0' },
+  margin: { t: 30, r: 20, l: 60, b: 50 },
+  xaxis: { gridcolor: 'rgba(255,255,255,0.06)', zerolinecolor: 'rgba(255,255,255,0.1)' },
+  yaxis: { gridcolor: 'rgba(255,255,255,0.06)', zerolinecolor: 'rgba(255,255,255,0.1)' },
+};
+
+fetch('assets/data/heatmap_data.json')
+  .then(r => r.json())
+  .then(data => {
+    const trace = {
+      z: data.matrix, x: data.days, y: data.hours.map(h => h + ':00'),
+      type: 'heatmap', colorscale: 'RdYlBu', reversescale: true,
+      colorbar: { title: '€/MWh', tickfont: { color: '#94a3b8' }, titlefont: { color: '#94a3b8' } },
+      hovertemplate: '<b>%{x} %{y}</b><br>Precio medio: %{z:.1f} €/MWh<extra></extra>'
+    };
+    if (document.getElementById('heatmap-chart')) {
+        Plotly.newPlot('heatmap-chart', [trace], {
+          ...LAYOUT_BASE,
+          margin: { t: 10, r: 20, l: 60, b: 40 },
+        }, { responsive: true, displayModeBar: false });
+    }
+  }).catch(e => console.log('Error heatmap', e));
+
+fetch('assets/data/timeseries_data.json')
+  .then(r => r.json())
+  .then(data => {
+    const trace = {
+      x: data.dates, y: data.prices, type: 'scatter', mode: 'lines',
+      line: { color: ACCENT, width: 1.5 }, name: 'Precio diario',
+      fill: 'tozeroy', fillcolor: 'rgba(56,189,248,0.1)',
+      hovertemplate: '%{x}<br><b>%{y:.1f} €/MWh</b><extra></extra>'
+    };
+    const mean = Object.values(data.prices).filter(Boolean).reduce((a,b) => a+b, 0) / Object.values(data.prices).filter(Boolean).length;
+    const meanTrace = {
+      x: [data.dates[0], data.dates[data.dates.length-1]], y: [mean, mean],
+      mode: 'lines', line: { color: '#ef4444', dash: 'dash', width: 1.5 },
+      name: `Media`,
+      hoverinfo: 'skip'
+    };
+    if (document.getElementById('timeseries-chart')) {
+        Plotly.newPlot('timeseries-chart', [trace, meanTrace], {
+          ...LAYOUT_BASE,
+          yaxis: { ...LAYOUT_BASE.yaxis, title: '€/MWh' },
+          showlegend: false,
+          margin: { t: 10, r: 20, l: 60, b: 40 },
+        }, { responsive: true, displayModeBar: false });
+    }
+  }).catch(e => console.log('Error timeseries', e));
+</script>
+
+</body>
+
+</html>
